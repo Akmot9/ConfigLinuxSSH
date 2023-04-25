@@ -32,3 +32,23 @@ EOF
 systemctl restart networking.service
 
 echo "Configuration terminée !"
+
+echo "installation du serveur ssh"
+# Vérifier si OpenSSH est installé
+if [ $(dpkg-query -W -f='${Status}' openssh-server 2>/dev/null | grep -c "ok installed") -eq 0 ]; then
+  # Si OpenSSH n'est pas installé, l'installer
+  echo "OpenSSH n'est pas installé. Installation en cours..."
+  sudo apt-get update
+  sudo apt-get install openssh-server
+else
+  echo "OpenSSH est déjà installé."
+fi
+
+# Vérifier si OpenSSH est lancé
+if [ $(ps -ef | grep sshd | grep -v grep | wc -l) -eq 0 ]; then
+  # Si OpenSSH n'est pas lancé, le lancer
+  echo "OpenSSH n'est pas lancé. Démarrage en cours..."
+  sudo service ssh start
+else
+  echo "OpenSSH est déjà lancé."
+fi
